@@ -1,7 +1,18 @@
 #include<stdio.h>
 #include<unistd.h>
 #include<stdlib.h>
+#include<string.h>
+#include<sys/types.h>
+#include<sys/wait.h>
 #define MAX_LINE 80
+#define BUFFER_SIZE 50
+char buffer[BUFFER_SIZE];
+
+void handle_SIGINT()
+{
+	write(STDOUT_FILENO, buffer, strlen(buffer));
+	exit(0);
+}
 
 void setup(char inputBuffer[], char *args[], int *background)
 {
@@ -56,14 +67,33 @@ void setup(char inputBuffer[], char *args[], int *background)
 
 int main(void)
 {
+	struct sigaction handler;
+	handler.sa_handler = handle_SIGINT;
+	sigaction(SIGINT, &handler, NULL);
+
+	strcpy(buffer, "Caught Control+C!\n");
+
 	char inputBuffer[MAX_LINE];
 	int background;
 	char *args[MAX_LINE/2 + 1];
-
+	
 	while (1)
 	{
 		background = 0;
 		printf(" CAMMAND->");
+		fflush(stdout);
 		setup(inputBuffer, args, &background);
+		pid_t pid ;
+		pid = fork();
+		if (pid == 0)
+		{
+			execvp(args[0], args);
+		}
+		else
+		{
+			if (!background)
+				waitpid(pid, NULL, 0);
+		}
+		
 	}
 }
