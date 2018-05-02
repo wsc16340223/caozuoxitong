@@ -2,14 +2,13 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<malloc.h>
-#define NUM_THREADS 10
-#define M 3
-#define N 3
-#define K 2
+pthread_t workers[10][10]; 
 
-int A[M][K] = {{1,4}, {2,5}, {3,6}};
-int B[K][N] = {{8,7,6}, {5,4,3}};
-int C[M][N];
+int M, N, K;
+
+int A[10][10];
+int B[10][10];
+int C[10][10];
 //使用结构来传递多个参数
 struct v
 {
@@ -30,9 +29,30 @@ void *runner(void *d)
 
 int main()
 {
-    pthread_t workers[NUM_THREADS]; 
+    
 
     int i, j, k = 0;
+
+    printf("Input the row and col of Matrix A:\n");
+    scanf("%d%d", &M, &K);
+    for (i = 0; i < M; i++)
+    {
+        for (j = 0; j < K; j++)
+        {
+            scanf("%d", &A[i][j]);
+        }
+    }
+
+    printf("Input the row and col of Matrix B:\n");
+    scanf("%d%d", &K, &N);
+    for (i = 0; i < K; i++)
+    {
+        for (j = 0; j < N; j++)
+        {
+            scanf("%d", &B[i][j]);
+        }
+    }
+
     for (i = 0; i < M; i++)
     {
         for (j = 0; j < N; j++)
@@ -42,8 +62,8 @@ int main()
             data.i = i;
             data.j = j;
             //创建线程 待其终止后阻塞它
-            pthread_create(&workers[k], NULL, (void *)runner, (void *)&data);
-            pthread_join(workers[k], NULL);
+            pthread_create(&workers[i][j], NULL, (void *)runner, (void *)&data);
+            pthread_join(workers[i][j], NULL);
             k++;
         }
     }
@@ -53,11 +73,12 @@ int main()
         pthread_join(workers[i], NULL);
     }
 */
+    printf("The output of Matrix C:\n");
     for (i = 0; i < M; i++) //输出得到的矩阵
     {
         for (j = 0; j < N; j++)
         {
-            printf("%3d ", C[i][j]);
+            printf("%5d ", C[i][j]);
         }
         printf("\n");
     }
