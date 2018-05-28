@@ -8,7 +8,10 @@
 
 #define MAXRAND 100
 int data = 0;
+//读者数量及写者数量
 int read_count = 0, write_count = 0;
+//writeM是对write_count的互斥，readM是对read_count的互斥
+//mutexR对READ进行互斥，  mutexW当写者在写或者等待时，阻塞读者
 sem_t writeM, readM, mutexR, mutexW;
 
 struct Threads
