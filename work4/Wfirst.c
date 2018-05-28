@@ -4,7 +4,6 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<time.h>
-#include<unistd.h>
 
 #define MAXRAND 100
 int data = 0;
